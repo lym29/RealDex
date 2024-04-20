@@ -32,11 +32,11 @@ class DataProcesser():
         self.scene_to_mesh = None
         
         struct_file = "./assets/srhand_ur.json"
+        urdf_path = "./assets/bimanual_srhand_ur.urdf"
         if mesh_prefix is None:
             mesh_prefix = "./assets/description/"
         '''Load Hand Mesh'''
         with open(struct_file, 'r') as f:
-            # Load the JSON data
             self.urdf_info = json.load(f)
             
         link_list = self.urdf_info['node_names']
@@ -44,7 +44,6 @@ class DataProcesser():
         # print(self.mesh_dict.keys())
         
         '''Load TF Sequence Data'''
-        # tf_data_file = os.path.join(self.tf_data_dir, "global_tf_all_in_one.npy")
         seq_file = os.path.join(self.tf_data_dir, "tf_seq.npy")
         if os.path.exists(seq_file): 
             seq_data = np.load(seq_file, allow_pickle=True)
@@ -486,10 +485,7 @@ class DataProcesser():
         
     def split_data(self, out_dir, split_type='object'):
         if split_type == 'object':
-            # train = ['blue_magnet_toy', 'body_lotion', 'crisps', 'dust_cleaning_sprayer', 
-            #          'laundry_detergent', 'toilet_cleaning_sprayer']
-            
-            train = []
+            train = [] # if object not in val or test, then it should be in train
             val = ['goji_jar', 'small_sprayer', 'yogurt', 'body_lotion', 'bowling_game_box', 'chips']
             test = ['duck_toy', 'cosmetics', 'sprayer', 'box', 'daily_moisture_lotion', 'midew_remover']
             
@@ -583,8 +579,6 @@ def run_single(model_name, exp_code, idx_scene=None):
     
     
 if __name__ == '__main__':
-    urdf_path = "../../data_process/bimanual_srhand_ur.urdf"
-    
     base_dir = "/storage/group/4dvlab/youzhuo/bags"
     cam_param_dir = "../../calibration_ws/calibration_process/data"
     obj_model_dir = "/storage/group/4dvlab/youzhuo/models"
@@ -602,7 +596,7 @@ if __name__ == '__main__':
     #         break
     
     model_name_list = os.listdir(base_dir)
-    exclude_list = [] #["body_lotion", "air_duster", "bathroom_cleaner", "beer", "box"]
+    exclude_list = []
     for model_name in model_name_list:
         if model_name in exclude_list:
             continue
